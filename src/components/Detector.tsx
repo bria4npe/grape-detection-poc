@@ -231,8 +231,7 @@ export function Detector() {
       }
 
       if (msg.type === 'LOG') {
-        // Logs enviados desde el worker
-        addLog((msg as unknown as { text: string }).text);
+        addLog(msg.text);
         return;
       }
 

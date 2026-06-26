@@ -97,4 +97,5 @@ export type WorkerInMessage =
 export type WorkerOutMessage =
   | { type: 'READY'; backend: string }
   | { type: 'RESULT'; detections: Detection[]; inferMs: number }
-  | { type: 'ERROR'; message: string };
+  | { type: 'ERROR'; message: string }
+  | { type: 'LOG'; text: string };

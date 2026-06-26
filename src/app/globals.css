@@ -1,0 +1,72 @@
+/* Reset mínimo sin framework — la PoC no necesita Tailwind ni CSS-in-JS */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: system-ui, -apple-system, sans-serif;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Detector layout ─────────────────────────────────────────────── */
+.detector-root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  /* aspect-ratio cuadrado: coincide con la entrada del modelo YOLO */
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Canvas absolutamente superpuesto */
+.detection-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* pointer-events: none → los toques pasan al video/otros elementos */
+  pointer-events: none;
+}
+
+/* ── HUD ─────────────────────────────────────────────────────────── */
+.hud {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.60);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  line-height: 1.7;
+  pointer-events: none;
+  /* backdrop-filter mejora legibilidad sobre colores variables */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.hud strong { color: #4ade80; }  /* verde suave para los valores */
+
+.hud-status {
+  margin-top: 4px;
+  color: #fbbf24; /* ámbar para mensajes de carga/error */
+  font-size: 10px;
+}

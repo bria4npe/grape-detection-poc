@@ -1,0 +1,47 @@
+# Next.js
+.next/
+out/
+
+# Dependencias
+node_modules/
+
+# Modelo ONNX (archivo binario grande — usar Git LFS o descarga manual)
+public/models/*.onnx
+
+# Datasets de Roboflow y checkpoints de entrenamiento
+Grape-detection-1/
+grape-4/
+*-detection-*/
+*-dataset-*/
+runs/
+
+# Modelos PyTorch
+*.pt
+
+# Archivos compilados sueltos
+*.js
+!next.config.js
+
+# Archivos sueltos
+index.html
+README.md
+
+# ORT runtime files (se generan automáticamente al arrancar desde node_modules)
+public/ort/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

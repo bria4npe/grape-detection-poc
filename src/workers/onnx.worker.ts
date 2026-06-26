@@ -35,6 +35,7 @@ let session:       ort.InferenceSession | null = null;
 let inputName:     string = '';
 let activeBackend: string = 'unknown';
 let numClasses:    number = 80;
+let diagCount:     number = 0;
 
 /** Envía un log al hilo principal para mostrarlo en el HUD. */
 function postLog(text: string): void {
@@ -71,12 +72,6 @@ function configureOrtEnv(): void {
   ort.env.wasm.numThreads = (navigator as Navigator & { hardwareConcurrency?: number })
     .hardwareConcurrency ?? 4;
 
-  // ── WebGPU power preference ───────────────────────────────────────────────
-  // 'high-performance' solicita la GPU dedicada en laptops con GPU dual.
-  // En móviles suele ignorarse (solo tienen una GPU) pero no causa errores.
-  ort.env.webgpu = {
-    powerPreference: 'high-performance',
-  } as typeof ort.env.webgpu;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -143,12 +138,7 @@ async function initModel(modelUrl: string): Promise<void> {
   // ── Inspeccionar metadatos del modelo ─────────────────────────────────────
   inputName = session.inputNames[0];
 
-  // Inferir número de clases desde la forma del tensor de salida.
-  // YOLOv8 COCO: output shape = [1, 84, 8400] → 84 - 4 = 80 clases.
-  const outMeta = session.outputMetadata?.[session.outputNames[0]];
-  if (outMeta?.dimensions) {
-    numClasses = (outMeta.dimensions[1] as number) - 4;
-  }
+  // numClasses se auto-detecta en el primer frame desde el tamaño del tensor de salida.
 
   postLog(`🔎 input: ${inputName} | clases: ${numClasses} | ${activeBackend}`);
 }
@@ -196,11 +186,7 @@ async function runInference(bitmap: ImageBitmap): Promise<{ inferMs: number }> {
   const detections = decodeAndNMS(rawOutput, numClasses);
 
   // Cada ~60 frames loguear el score máximo para diagnóstico
-  if (!('_diagCount' in (self as unknown as Record<string, unknown>))) {
-    (self as unknown as Record<string, unknown>)._diagCount = 0;
-  }
-  const diagCount = (self as unknown as Record<string, number>)._diagCount++;
-  if (diagCount % 60 === 0) {
+  if (diagCount++ % 60 === 0) {
     let maxScore = 0;
     const numAnchors = 8400;
     for (let a = 0; a < numAnchors; a++) {
